@@ -9,7 +9,7 @@ Note: We followed ReaLiSe and SIGHAN 2015 bake-off to implement metrics for sent
 ## Usage
 
 ```bash
-csc_eval.sh hyp_file gold_file
+bash csc_eval.sh hyp_file gold_file
 ```
 
 ## Output Format
@@ -31,6 +31,6 @@ Accuracy: 86.67, Precision: 92.86, Recall: 81.25, F1: 86.67
 ```
 
 ## Refernces
-[1] Xu, Heng-Da, Zhongli Li, Qingyu Zhou, Chao Li, Zizhen Wang, Yunbo Cao, Heyan Huang, and Xian-Ling Mao. “Read, Listen, and See: Leveraging Multimodal Information Helps Chinese Spell Checking.” In Findings of the Association for Computational Linguistics: ACL-IJCNLP 2021, 716–28. 
+[1] Heng-Da Xu, Zhongli Li, Qingyu Zhou, et al. “Read, Listen, and See: Leveraging Multimodal Information Helps Chinese Spell Checking.” In Findings of the Association for Computational Linguistics: ACL-IJCNLP 2021, 716–28. 
 
-[2] Tseng, Yuen-Hsien, Lung-Hao Lee, Li-Ping Chang, and Hsin-Hsi Chen. “Introduction to SIGHAN 2015 Bake-off for Chinese Spelling Check.” In Proceedings of the Eighth SIGHAN Workshop on Chinese Language Processing, 32–37.
+[2] Yuen-Hsien Tseng, Lung-Hao Lee, Li-Ping Chang, et al. “Introduction to SIGHAN 2015 Bake-off for Chinese Spelling Check.” In Proceedings of the Eighth SIGHAN Workshop on Chinese Language Processing, 32–37.

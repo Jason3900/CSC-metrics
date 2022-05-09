@@ -34,17 +34,17 @@ def get_correction_map(path):
 
 def get_eval_metrics(conf_set, total):
         # print(conf_set)
-        fp = len(conf_set["fp"]) / (len(conf_set["fp"]) + len(conf_set["tn"]))
+        # fp = len(conf_set["fp"]) / (len(conf_set["fp"]) + len(conf_set["tn"]))
         acc = (len(conf_set["tp"]) + len(conf_set["tn"])) / total
         prec = len(conf_set["tp"]) / (len(conf_set["tp"]) + len(conf_set["fp"]))
         recall = len(conf_set["tp"]) / (len(conf_set["tp"]) + len(conf_set["fn"]))
         f1 = 2.0 * prec * recall / (prec + recall)
-        metrics = {"fp": fp, "acc": acc, "prec": prec, "recall": recall, "f1": f1}
+        metrics = OrderedDict({"Accuracy": acc * 100, "Precision": prec * 100, "Recall": recall * 100, "F1": f1 * 100})
         return metrics
 
 def main(config):
-        gold_path = config.gold_path
-        hyp_path = config.pred_path
+        gold_path = config.gold
+        hyp_path = config.hyp
         gold_map = get_correction_map(gold_path)
         hyp_map = get_correction_map(hyp_path)
         detect_conf_dict = {k: set() for k in ["tp", "fn", "fp", "tn"]}
@@ -76,16 +76,16 @@ def main(config):
                         correct_conf_dict["fn"].add(item_id)
         detect_metrics = get_eval_metrics(detect_conf_dict, len(hyp_map))
         correct_metrics = get_eval_metrics(correct_conf_dict, len(hyp_map))
-        metrics = {"detection": detect_metrics, "correction": correct_metrics}
+        metrics = OrderedDict({"Detection": detect_metrics, "Correction": correct_metrics})
+        print("=" * 10 + " Character Level " + "=" * 10)
         for k, v in metrics.items():
-                print(f"{k}: {v}")
-        return metrics["detection"]["prec"], metrics["detection"]["recall"], metrics["detection"]["f1"], metrics["correction"]["prec"], metrics["correction"]["recall"], metrics["correction"]["f1"]
-
+            print(f"{k}: ")
+            print(", ".join([f"{k_i}: {round(v_i, 2)}" for k_i, v_i in v.items()]))
 
 if __name__ == "__main__":
         parser = argparse.ArgumentParser()
-        parser.add_argument("--gold_path", type=str)
-        parser.add_argument("--pred_path", type=str)
+        parser.add_argument("--gold", type=str)
+        parser.add_argument("--hyp", type=str)
 
         args = parser.parse_args()
         main(args)                                          

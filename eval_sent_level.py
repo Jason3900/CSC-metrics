@@ -1,7 +1,8 @@
 # -*- coding:UTF-8 -*-
-# forked from https://github.com/DaDaMrX/ReaLiSe
+# modified from https://github.com/DaDaMrX/ReaLiSe
 import argparse
 import json
+from collections import OrderedDict
 
 def read_file(path):
     with open(path, 'r', encoding='utf-8') as f:
@@ -22,14 +23,11 @@ def read_file(path):
 def metric_file(pred_path, targ_path):
     preds = read_file(pred_path)
     targs = read_file(targ_path)
+    metrics = OrderedDict()
+    metrics["Detection"] = sent_metric_detect(preds=preds, targs=targs)
+    metrics["Correction"] = sent_metric_correct(preds=preds, targs=targs)
 
-    results = {}
-    res = sent_metric_detect(preds=preds, targs=targs)
-    results.update(res)
-    res = sent_metric_correct(preds=preds, targs=targs)
-    results.update(res)
-
-    return results
+    return metrics
 
 
 def sent_metric_detect(preds, targs):
@@ -51,12 +49,12 @@ def sent_metric_detect(preds, targs):
     p = tp / pred_p
     r = tp / targ_p
     f1 = 2 * p * r / (p + r) if p + r > 0 else 0.0
-    results = {
-        'sent-detect-acc': acc * 100,
-        'sent-detect-p': p * 100,
-        'sent-detect-r': r * 100,
-        'sent-detect-f1': f1 * 100,
-    }
+    results = OrderedDict({
+        'Accuracy': acc * 100,
+        'Precision': p * 100,
+        'Recall': r * 100,
+        'F1': f1 * 100,
+    })
     return results
 
 
@@ -79,30 +77,29 @@ def sent_metric_correct(preds, targs):
     p = tp / pred_p
     r = tp / targ_p
     f1 = 2 * p * r / (p + r) if p + r > 0 else 0.0
-    results = {
-        'sent-correct-acc': acc * 100,
-        'sent-correct-p': p * 100,
-        'sent-correct-r': r * 100,
-        'sent-correct-f1': f1 * 100,
-    }
+    results = OrderedDict({
+        'Accuracy': acc * 100,
+        'Precision': p * 100,
+        'Recall': r * 100,
+        'F1': f1 * 100,
+    })
     return results
 
+def main(args):
+    metrics = metric_file(
+        pred_path=args.hyp,
+        targ_path=args.gold,
+    )
+    print("=" * 10 + " Sentence Level " + "=" * 10)
+    for k, v in metrics.items():
+        print(f"{k}: ")
+        print(", ".join([f"{k_i}: {round(v_i, 2)}" for k_i, v_i in v.items()]))
+    
+    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input', '-i', required=True, help="path for system preds")
-    parser.add_argument('--target', '-t', required=True, help="path for gold-standard")
-    parser.add_argument("--output", "-o", help="path for output file")
+    parser.add_argument('--hyp', required=True)
+    parser.add_argument('--gold', required=True)
     args = parser.parse_args()
-
-    results = metric_file(
-        pred_path=args.input,
-        targ_path=args.target,
-    )
-    
-    for k, v in results.items():
-        print(f'{k}: {v}')
-    
-    if args.output is not None:
-        with open(args.output, "w", encoding="utf8") as fw:
-            fw.write(json.dumps(results, ensure_ascii=False, indent=2))
+    main(args)
